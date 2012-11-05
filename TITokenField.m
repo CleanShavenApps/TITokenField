@@ -420,9 +420,9 @@ NSString * const kTextHidden = @"\u200D"; // Zero-Width Joiner
 	[self setAutocorrectionType:UITextAutocorrectionTypeNo];
 	[self setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	
-	[self addTarget:self action:@selector(didBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
-	[self addTarget:self action:@selector(didEndEditing) forControlEvents:UIControlEventEditingDidEnd];
-	[self addTarget:self action:@selector(didChangeText) forControlEvents:UIControlEventEditingChanged];
+	[self addTarget:self action:@selector(didBeginEditing:) forControlEvents:UIControlEventEditingDidBegin];
+	[self addTarget:self action:@selector(didEndEditing:) forControlEvents:UIControlEventEditingDidEnd];
+	[self addTarget:self action:@selector(didChangeText:) forControlEvents:UIControlEventEditingChanged];
 	
 	[self.layer setShadowColor:[[UIColor blackColor] CGColor]];
 	[self.layer setShadowOpacity:0.6];
@@ -494,11 +494,16 @@ NSString * const kTextHidden = @"\u200D"; // Zero-Width Joiner
 	return (editable ? [super becomeFirstResponder] : NO);
 }
 
-- (void)didBeginEditing {
+- (void)didBeginEditing:(id)sender {
+	if (sender != self)
+		return;
+	
 	[tokens enumerateObjectsUsingBlock:^(TIToken * token, NSUInteger idx, BOOL *stop){[self addToken:token];}];
 }
 
-- (void)didEndEditing {
+- (void)didEndEditing:(id)sender {
+	if (sender != self)
+		return;
 	
 	[selectedToken setSelected:NO];
 	selectedToken = nil;
@@ -532,7 +537,10 @@ NSString * const kTextHidden = @"\u200D"; // Zero-Width Joiner
 	[self setResultsModeEnabled:NO];
 }
 
-- (void)didChangeText {
+- (void)didChangeText:(id)sender {
+	if (sender != self)
+		return;
+	
 	if (self.text.length == 0) [self setText:kTextEmpty];
 }
 
