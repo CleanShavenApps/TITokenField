@@ -536,6 +536,9 @@
 	{
         NSInteger scrollToRow = 0;
         
+        if ([self.delegate respondsToSelector:@selector(tokenTableViewController:searchResultsVisible:forTokenField:)])
+            [self.delegate tokenTableViewController:self searchResultsVisible:visible forTokenField:tokenField];
+        
         if (visible) {
             // showing the search result table: scroll the current cell to top
             NSInteger count = self.tokenDataSource.numberOfTokenRows;

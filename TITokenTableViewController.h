@@ -70,6 +70,11 @@
 - (void)tokenTableViewController:(TITokenTableViewController *)tableView
 	didFinishSettingUpTokenField:(TITokenField *)tokenField;
 
+/**
+ * Called when search results will become visible or will be hidden
+ */
+- (void)tokenTableViewController:(TITokenTableViewController *)tableView searchResultsVisible:(BOOL)visible forTokenField:(TITokenField *)tokenField;
+
 @end
 
 
