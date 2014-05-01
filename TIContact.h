@@ -28,6 +28,9 @@
 // Label describing the type of phone number
 @property (nonatomic, copy) NSString *phoneLabel;
 
+// Score indicates frequency of use
+@property (nonatomic) NSUInteger score;
+
 + (id)contactWithName:(NSString *)name
 				email:(NSString *)email
 				label:(NSString *)label;
