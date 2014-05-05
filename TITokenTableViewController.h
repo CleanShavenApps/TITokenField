@@ -75,6 +75,16 @@
  */
 - (void)tokenTableViewController:(TITokenTableViewController *)tableView searchResultsVisible:(BOOL)visible forTokenField:(TITokenField *)tokenField;
 
+/**
+ Called when loading cell for representedObject in search results of tokenField.
+ */
+- (BOOL)tokenTableViewController:(TITokenTableViewController *)controller shouldShowDetailAccessoryViewForRepresentedObject:(id)representedObject forTokenField:(TITokenField *)tokenField;
+
+/**
+ Called when user taps on the detail accessory view of a search result belonging to tokenField
+ */
+- (void)tokenTableViewController:(TITokenTableViewController *)controller tableView:(UITableView *)tableView wantsToShowDetailsOfRepresentedObject:(id)representedObject atIndexPath:(NSIndexPath *)indexPath forTokenField:(TITokenField *)tokenField;
+
 @end
 
 
@@ -123,6 +133,19 @@
 @property (nonatomic, weak) id<TITokenTableViewControllerDelegate> delegate;
 
 - (void)updateContentSize;
+
+/**
+ Removes the object from the search results array. Use to manually remove an
+ object and update the table view structure. Returns the index of the object
+ if successfully removed. Otherwise, returns \c NSNotFound
+ */
+- (NSUInteger)removeFromSearchResultsSourceObject:(id)object;
+
+/**
+ Clears the search result array and reloads the results based on the text found
+ in the current selected token field
+ */
+- (void)clearAndReloadSearchResults;
 
 // Use this to obtain the token field for the prompt
 - (TITokenField *)tokenFieldForPrompt:(NSString *)prompt;

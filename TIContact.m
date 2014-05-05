@@ -69,4 +69,71 @@
 	return _emailLabel;
 }
 
+#pragma mark - Equality Check
+
+- (BOOL)isEqualToContact:(TIContact *)contact
+{
+	if (self == contact)
+	{
+		return YES;
+	}
+	
+	if (![contact isKindOfClass:[self class]])
+	{
+		return NO;
+	}
+	
+	if (![self ti_string:self.fullName isEqual:contact.fullName])
+	{
+		return NO;
+	}
+	
+	if (![self ti_string:self.email isEqual:contact.email])
+	{
+		return NO;
+	}
+
+	if (![self ti_string:self.emailLabel isEqual:contact.emailLabel])
+	{
+		return NO;
+	}
+
+	if (![self ti_string:self.phone isEqual:contact.phone])
+	{
+		return NO;
+	}
+
+	if (![self ti_string:self.phoneLabel isEqual:contact.phoneLabel])
+	{
+		return NO;
+	}
+
+	if (self.score != contact.score)
+	{
+		return NO;
+	}
+	
+	return YES;
+}
+
+- (BOOL)isEqual:(id)object
+{
+	return [self isEqualToContact:object];
+}
+
+- (NSUInteger)hash
+{
+	return [self.fullName hash]
+	^ [self.email hash]
+	^ [self.emailLabel hash]
+	^ [self.phone hash]
+	^ [self.phoneLabel hash]
+	^ [@(self.score) hash];
+}
+
+- (BOOL)ti_string:(NSString *)stringA isEqual:(NSString *)stringB
+{
+	return (!stringA && !stringB) || [stringA isEqualToString:stringB];
+}
+
 @end

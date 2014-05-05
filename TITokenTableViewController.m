@@ -388,10 +388,17 @@
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             }
         }
-        
+
+		BOOL wantsDetailAccessoryButton = NO;
+		
+		if ([self.delegate respondsToSelector:@selector(tokenTableViewController:shouldShowDetailAccessoryViewForRepresentedObject:forTokenField:)])
+		{
+			wantsDetailAccessoryButton = [self.delegate tokenTableViewController:self shouldShowDetailAccessoryViewForRepresentedObject:representedObject forTokenField:self.currentSelectedTokenField];
+		}
+		
+		cell.accessoryType = wantsDetailAccessoryButton ? UITableViewCellAccessoryDetailButton : UITableViewCellAccessoryNone;
         cell.detailTextLabel.text = subtitle;
         [cell.textLabel setText:[self searchResultStringForRepresentedObject:representedObject]];
-        
     }
     
     
@@ -403,6 +410,25 @@
 }
 
 #pragma mark - Table view delegate
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == resultsTable)
+	{
+		if (![self.delegate respondsToSelector:@selector(tokenTableViewController:tableView:wantsToShowDetailsOfRepresentedObject:atIndexPath:forTokenField:)])
+		{
+			return;
+		}
+		
+        TITokenField *tokenField = self.currentSelectedTokenField;
+        if (tokenField)
+		{
+            id representedObject = [resultsArray objectAtIndex:(NSUInteger) indexPath.row];
+			
+			[self.delegate tokenTableViewController:self tableView:tableView wantsToShowDetailsOfRepresentedObject:representedObject atIndexPath:indexPath forTokenField:tokenField];
+        }
+	}
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 
@@ -484,6 +510,27 @@
 }
 
 #pragma mark - Results Methods
+
+- (NSUInteger)removeFromSearchResultsSourceObject:(id)object
+{
+	NSUInteger index = [resultsArray indexOfObject:object];
+	if (index != NSNotFound)
+	{
+		[resultsArray removeObjectAtIndex:index];
+	}
+	return index;
+}
+
+- (void)clearAndReloadSearchResults:(BOOL)reloadData
+{
+	if (self.currentSelectedTokenField)
+	{
+		[resultsArray removeAllObjects];
+		[resultsTable reloadData];
+		[self tokenFieldTextDidChange:self.currentSelectedTokenField];
+	}
+}
+
 - (NSString *)displayStringForRepresentedObject:(id)object {
     
     TITokenField *tokenField = self.currentSelectedTokenField;
@@ -606,8 +653,8 @@
     }
 }
 
-- (void)resultsForSearchString:(NSString *)searchString {
-    
+- (void)resultsForSearchString:(NSString *)searchString
+{
     TITokenField *tokenField = self.currentSelectedTokenField;
 	// The brute force searching method.
 	// Takes the input string and compares it against everything in the source array.
