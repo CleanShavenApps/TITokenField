@@ -30,6 +30,7 @@
 
 @interface TITokenTableViewController ()
 @property (nonatomic, strong) NSMutableDictionary *tokenFields;
+@property (strong, nonatomic) NSMutableArray *resultsArray;
 @end
 
 @implementation TITokenTableViewController
@@ -65,7 +66,7 @@
 	[self.view insertSubview:self.tableView atIndex:0];
     
     showAlreadyTokenized = NO;
-    resultsArray = [[NSMutableArray alloc] init];
+    self.resultsArray = nil;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 	{
@@ -265,7 +266,7 @@
         
     }
     if (tableView == resultsTable) {
-        return resultsArray.count;
+        return self.resultsArray.count;
     }
     return 0;
     
@@ -362,7 +363,7 @@
     
     // DISPLAYING THE SEARCH RESULT
     if (tableView == resultsTable) {
-        id representedObject = [resultsArray objectAtIndex:(NSUInteger) indexPath.row];
+        id representedObject = [self.resultsArray objectAtIndex:(NSUInteger) indexPath.row];
         
 
         //todo, shall the delegate be able to give a result cell ?
@@ -423,7 +424,7 @@
         TITokenField *tokenField = self.currentSelectedTokenField;
         if (tokenField)
 		{
-            id representedObject = [resultsArray objectAtIndex:(NSUInteger) indexPath.row];
+            id representedObject = [self.resultsArray objectAtIndex:(NSUInteger) indexPath.row];
 			
 			[self.delegate tokenTableViewController:self tableView:tableView wantsToShowDetailsOfRepresentedObject:representedObject atIndexPath:indexPath forTokenField:tokenField];
         }
@@ -444,7 +445,7 @@
         
         TITokenField *tokenField = self.currentSelectedTokenField;
         if (tokenField) {
-            id representedObject = [resultsArray objectAtIndex:(NSUInteger) indexPath.row];
+            id representedObject = [self.resultsArray objectAtIndex:(NSUInteger) indexPath.row];
             TIToken *token = [[TIToken alloc] initWithTitle:[self displayStringForRepresentedObject:representedObject] representedObject:representedObject];
 			
 			// Use the token field's tint color if any
@@ -475,7 +476,7 @@
         cell = cell.superview;
     }
     
-	[resultsArray removeAllObjects];
+	self.resultsArray = nil;
 	[resultsTable reloadData];
 }
 
@@ -484,8 +485,18 @@
     self.currentSelectedTokenField = nil;
 }
 
-- (void)tokenFieldTextDidChange:(TITokenField *)field {
-	[self resultsForSearchString:[field.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+- (void)tokenFieldTextDidChange:(TITokenField *)field
+{
+	TITokenTableViewController *__weak weakSelf = self;
+	
+	[self searchForString:[field.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
+			forTokenField:field
+			   completion:^(NSArray *results)
+	 {
+		 weakSelf.resultsArray = [results mutableCopy];
+		 [resultsTable reloadData];
+		 [weakSelf setSearchResultsVisible:(results.count > 0) forTokenField:field];
+	 }];
 }
 
 - (void)tokenFieldFrameWillChange:(TITokenField *)field {
@@ -513,10 +524,10 @@
 
 - (NSUInteger)removeFromSearchResultsSourceObject:(id)object
 {
-	NSUInteger index = [resultsArray indexOfObject:object];
+	NSUInteger index = [self.resultsArray indexOfObject:object];
 	if (index != NSNotFound)
 	{
-		[resultsArray removeObjectAtIndex:index];
+		[self.resultsArray removeObjectAtIndex:index];
 	}
 	return index;
 }
@@ -525,7 +536,7 @@
 {
 	if (self.currentSelectedTokenField)
 	{
-		[resultsArray removeAllObjects];
+		self.resultsArray = nil;
 		[resultsTable reloadData];
 		[self tokenFieldTextDidChange:self.currentSelectedTokenField];
 	}
@@ -653,18 +664,18 @@
     }
 }
 
-- (void)resultsForSearchString:(NSString *)searchString
+- (void)searchForString:(NSString *)searchString
+		  forTokenField:(TITokenField *)tokenField
+			 completion:(void (^)(NSArray *results))completion
 {
-    TITokenField *tokenField = self.currentSelectedTokenField;
-	// The brute force searching method.
-	// Takes the input string and compares it against everything in the source array.
-	// If the source is massive, this could take some time.
-	// You could always subclass and override this if needed or do it on a background thread.
-	// GCD would be great for that.
-    
-	[resultsArray removeAllObjects];
-	[resultsTable reloadData];
-    
+	if (completion == nil || completion == NULL)
+	{
+		// Don't waste time searching
+		return;
+	}
+	
+	NSMutableArray *results = [NSMutableArray array];
+	
 	[sourceArray enumerateObjectsUsingBlock:^(id sourceObject, NSUInteger idx, BOOL *stop){
         
 		NSString * query = [self searchResultStringForRepresentedObject:sourceObject];
@@ -682,7 +693,7 @@
 		
 		if (hasQueryAndMatchesSearch || hasQuerySubtitleAndMatchesSearch)
 		{
-			__block BOOL shouldAdd = ![resultsArray containsObject:sourceObject];
+			__block BOOL shouldAdd = ![results containsObject:sourceObject];
 			if (shouldAdd && !showAlreadyTokenized){
                 
 				[tokenField.tokens enumerateObjectsUsingBlock:^(TIToken * token, NSUInteger idx, BOOL *secondStop){
@@ -693,15 +704,18 @@
 				}];
 			}
             
-			if (shouldAdd) [resultsArray addObject:sourceObject];
+			if (shouldAdd)
+			{
+				[results addObject:sourceObject];
+			}
 		}
 	}];
     
-	[resultsArray sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-		return [[self searchResultStringForRepresentedObject:obj1 ] localizedCaseInsensitiveCompare:[self searchResultStringForRepresentedObject:obj2]];
+	[results sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+		return [[self searchResultStringForRepresentedObject:obj1] localizedCaseInsensitiveCompare:[self searchResultStringForRepresentedObject:obj2]];
 	}];
-	[resultsTable reloadData];
-	[self setSearchResultsVisible:(resultsArray.count > 0) forTokenField:tokenField];
+	
+	completion(results);
 }
 
 - (void)presentpopoverAtTokenFieldCaretAnimated:(BOOL)animated inTokenField:(TITokenField *)tokenField {

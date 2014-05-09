@@ -104,7 +104,6 @@
 #pragma mark - TITokenTableViewController
 
 @interface TITokenTableViewController : UIViewController <UITableViewDataSource, TITokenTableViewDelegate, TITokenFieldDelegate> {
-    NSMutableArray *resultsArray;
     UITableView *resultsTable;
     UIPopoverController *popoverController;
 
@@ -133,6 +132,15 @@
 @property (nonatomic, weak) id<TITokenTableViewControllerDelegate> delegate;
 
 - (void)updateContentSize;
+
+/**
+ Subclasses to override to search for \c searchString for insertion into
+ \c tokenField. Upon completion, call completion block with the results
+ so that the view controller can display the search table view
+ */
+- (void)searchForString:(NSString *)searchString
+		  forTokenField:(TITokenField *)tokenField
+			 completion:(void (^)(NSArray *results))completion;
 
 /**
  Removes the object from the search results array. Use to manually remove an
