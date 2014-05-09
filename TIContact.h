@@ -31,6 +31,9 @@
 // Score indicates frequency of use
 @property (nonatomic) NSUInteger score;
 
+// A score attached to the contact based on relevance of the search
+@property (nonatomic) CGFloat relevance;
+
 + (id)contactWithName:(NSString *)name
 				email:(NSString *)email
 				label:(NSString *)label;
