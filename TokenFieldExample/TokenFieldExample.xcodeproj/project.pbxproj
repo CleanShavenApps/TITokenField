@@ -16,6 +16,8 @@
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* TokenFieldExampleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* TokenFieldExampleViewController.m */; };
 		B32F73B716B3C3CF00D74542 /* TIContact.m in Sources */ = {isa = PBXBuildFile; fileRef = B32F73B616B3C3CF00D74542 /* TIContact.m */; };
+		B35FD7081930AB6F0042FD57 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B35FD7071930AB6F0042FD57 /* AudioToolbox.framework */; };
+		B35FD70A1930AD720042FD57 /* Fleksy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B35FD7091930AD720042FD57 /* Fleksy.framework */; };
 		E20C35C6160286F500DFF810 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E20C35C5160286F500DFF810 /* Default-568h@2x.png */; };
 		E259CED91530FBE6002D0609 /* TITokenField.m in Sources */ = {isa = PBXBuildFile; fileRef = E259CED81530FBE6002D0609 /* TITokenField.m */; };
 		E28950A215135A4E000FB56F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E28950A115135A4E000FB56F /* QuartzCore.framework */; };
@@ -40,6 +42,8 @@
 		8D1107310486CEB800E47090 /* TokenFieldExample-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TokenFieldExample-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		B32F73B516B3C3CF00D74542 /* TIContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TIContact.h; path = ../../TIContact.h; sourceTree = "<group>"; };
 		B32F73B616B3C3CF00D74542 /* TIContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TIContact.m; path = ../../TIContact.m; sourceTree = "<group>"; };
+		B35FD7071930AB6F0042FD57 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		B35FD7091930AD720042FD57 /* Fleksy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fleksy.framework; sourceTree = "<group>"; };
 		E20C35C5160286F500DFF810 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		E259CED71530FBE6002D0609 /* TITokenField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TITokenField.h; path = ../../TITokenField.h; sourceTree = "<group>"; };
 		E259CED81530FBE6002D0609 /* TITokenField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TITokenField.m; path = ../../TITokenField.m; sourceTree = "<group>"; };
@@ -53,7 +57,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B35FD7081930AB6F0042FD57 /* AudioToolbox.framework in Frameworks */,
 				E28950A215135A4E000FB56F /* QuartzCore.framework in Frameworks */,
+				B35FD70A1930AD720042FD57 /* Fleksy.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -118,6 +124,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B35FD7091930AD720042FD57 /* Fleksy.framework */,
+				B35FD7071930AB6F0042FD57 /* AudioToolbox.framework */,
 				E28950A115135A4E000FB56F /* QuartzCore.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -224,12 +232,20 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TokenFieldExample_Prefix.pch;
 				INFOPLIST_FILE = "TokenFieldExample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_LDFLAGS = (
+					"-lc++",
+					"-ObjC",
+				);
 				PRODUCT_NAME = TokenFieldExample;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -242,10 +258,18 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TokenFieldExample_Prefix.pch;
 				INFOPLIST_FILE = "TokenFieldExample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_LDFLAGS = (
+					"-lc++",
+					"-ObjC",
+				);
 				PRODUCT_NAME = TokenFieldExample;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
